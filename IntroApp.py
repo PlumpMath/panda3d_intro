@@ -1,4 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
+import sys
  
 
 class MyApp(ShowBase):
@@ -17,6 +18,10 @@ class MyApp(ShowBase):
         # Apply scale and position transforms on the NodePath.
         self.environ.setScale(0.25, 0.25, 0.25)
         self.environ.setPos(-8, 42, 0)
+        # disable the mouse so it does not interfere with camera
+        base.disableMouse()
+        # set up a key to quit
+        self.accept("escape", sys.exit)  # Escape quits
  		
 if __name__ == "__main__":
 	app = MyApp()
