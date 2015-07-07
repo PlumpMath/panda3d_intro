@@ -1,4 +1,6 @@
 from direct.showbase.ShowBase import ShowBase
+from direct.task import Task
+from math import pi, sin, cos
 import sys
  
 
@@ -22,7 +24,18 @@ class MyApp(ShowBase):
         base.disableMouse()
         # set up a key to quit
         self.accept("escape", sys.exit)  # Escape quits
- 		
+
+        # set up a task to move the camera
+        self.taskMgr.add(self.spin_camera_task, "SpinCameraTask")
+
+    def spin_camera_task(self, task):
+        # Define a method to move the camera.
+		angle_degrees = task.time * 6.0
+		angle_radians = angle_degrees * (pi / 180.0)
+		self.camera.setPos(20 * sin(angle_radians), -20.0 * cos(angle_radians), 3)
+		self.camera.setHpr(angle_degrees, 0, 0)
+		return task.cont
+
 if __name__ == "__main__":
 	app = MyApp()
 	app.run()
