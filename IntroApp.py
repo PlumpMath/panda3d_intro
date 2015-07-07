@@ -5,7 +5,8 @@ class MyApp(ShowBase):
  
     def __init__(self):
         ShowBase.__init__(self)
- 
- 
-app = MyApp()
-app.run()
+
+ 		
+if __name__ == "__main__":
+	app = MyApp()
+	app.run()
