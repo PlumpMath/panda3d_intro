@@ -22,12 +22,22 @@ class MyApp(ShowBase):
         self.environ.setPos(-8, 42, 0)
         # disable the mouse so it does not interfere with camera
         base.disableMouse()
-        # set up a key to quit
+        # set up some keyboard input
         self.accept("escape", sys.exit)  # Escape quits
+        self.accept("space", self.toggle_camera_spin)  # spacebar 
 
-        # set up a task to move the camera
-        self.taskMgr.add(self.spin_camera_task, "SpinCameraTask")
-
+        # set up a variable to keep track of camera toggle
+        self.spin_camera = True
+        # go ahead and start camera spinning
+        self.toggle_camera_spin()
+        
+    def toggle_camera_spin(self):
+		if self.spin_camera:
+			self.taskMgr.add(self.spin_camera_task, "SpinCameraTask")
+		else:
+			self.taskMgr.remove("SpinCameraTask")
+		self.spin_camera = not self.spin_camera
+        
     def spin_camera_task(self, task):
         # Define a method to move the camera.
 		angle_degrees = task.time * 6.0
