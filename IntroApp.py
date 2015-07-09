@@ -2,7 +2,7 @@ from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.actor.Actor import Actor
 from direct.interval.IntervalGlobal import Sequence
-from panda3d.core import Point3
+from panda3d.core import Point3, LVector3, KeyboardButton
 from math import pi, sin, cos
 import sys
 
@@ -70,6 +70,11 @@ class MyApp(ShowBase):
         self.smiley.setPos(0, 0, 1)
         self.smiley.reparentTo(self.render)
 
+        # velocity adjustment
+        self.vel_base = 3
+        # add task to allow smiley movement
+        self.taskMgr.add(self.game_loop_task, "GameLoop")
+
     def toggle_camera_spin(self):
         if self.spin_camera:
             self.spin_task = self.taskMgr.add(self.spin_camera_task, "SpinCameraTask")
@@ -89,6 +94,43 @@ class MyApp(ShowBase):
         self.camera.setPos(20 * sin(angle_radians), -20.0 * cos(angle_radians), 3)
         self.camera.setHpr(angle_degrees, 0, 0)
         return task.cont
+
+    def game_loop_task(self, task):
+        dt = globalClock.getDt()
+        velocity = self.poll_keyboard()
+        # print velocity
+        self.move_smiley(dt, velocity)
+        return task.cont
+
+    def poll_keyboard(self):
+        x_speed = 0.5
+        y_speed = 0.5
+        velocity = LVector3(0)
+        # poorly named, checks keyboard, not mouse, in this case
+        is_down = base.mouseWatcherNode.is_button_down
+        if is_down(KeyboardButton.up()):
+            velocity.y += y_speed
+        if is_down(KeyboardButton.down()):
+            velocity.y -= y_speed
+        if is_down(KeyboardButton.left()):
+            velocity.x -= x_speed
+        if is_down(KeyboardButton.right()):
+            velocity.x += x_speed
+        return velocity
+
+    def move_smiley(self, dt, velocity):
+        # print 'velocity', self.velocity
+        # this makes for smooth (correct speed) diagonal movement
+        # print 'velocity', self.velocity
+        magnitude = max(abs(velocity[0]), abs(velocity[1]))
+        move = None
+        if velocity.normalize():
+            velocity *= magnitude
+            move = velocity * self.vel_base * dt
+            # this makes for smooth movement
+            self.smiley.setFluidPos(self.smiley, move)
+        return move
+
 
 if __name__ == "__main__":
     app = MyApp()
