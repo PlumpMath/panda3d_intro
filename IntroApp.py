@@ -1,6 +1,8 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
 from direct.actor.Actor import Actor
+from direct.interval.IntervalGlobal import Sequence
+from panda3d.core import Point3
 from math import pi, sin, cos
 import sys
 
@@ -39,6 +41,30 @@ class MyApp(ShowBase):
         self.panda_actor.reparentTo(self.render)
         # Loop the animation.
         self.panda_actor.loop("walk")
+
+        # Create the four lerp intervals needed for the panda to
+        # walk back and forth.
+        panda_pos_interval1 = self.panda_actor.posInterval(13,
+                                                        Point3(0, -10, 0),
+                                                        startPos=Point3(0, 10, 0))
+        panda_pos_interval2 = self.panda_actor.posInterval(13,
+                                                        Point3(0, 10, 0),
+                                                        startPos=Point3(0, -10, 0))
+        panda_hpr_interval1 = self.panda_actor.hprInterval(3,
+                                                        Point3(180, 0, 0),
+                                                        startHpr=Point3(0, 0, 0))
+        panda_hpr_interval2 = self.panda_actor.hprInterval(3,
+                                                        Point3(0, 0, 0),
+                                                        startHpr=Point3(180, 0, 0))
+
+        # Create and play the sequence that coordinates the intervals.
+        self.panda_pace = Sequence(panda_pos_interval1,
+                                  panda_hpr_interval1,
+                                  panda_pos_interval2,
+                                  panda_hpr_interval2,
+                                  name="pandaPace")
+        self.panda_pace.loop()
+
 
     def toggle_camera_spin(self):
         if self.spin_camera:
