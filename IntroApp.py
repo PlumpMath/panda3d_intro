@@ -1,5 +1,6 @@
 from direct.showbase.ShowBase import ShowBase
 from direct.task import Task
+from direct.actor.Actor import Actor
 from math import pi, sin, cos
 import sys
 
@@ -13,8 +14,6 @@ class MyApp(ShowBase):
         self.environ = self.loader.loadModel("models/environment")
         # self.environ is now a NodePath, or a handler for the node (the actual model)
         # could load the same model several times with different NodePaths
-        print('NodePath', self.environ)
-        print('Node', self.environ.node())
         # Reparent the NodePath to render, so the engine knows to show it in the scene.
         self.environ.reparentTo(self.render)
         # Apply scale and position transforms on the NodePath.
@@ -32,6 +31,14 @@ class MyApp(ShowBase):
         self.spin_time = 0
         # go ahead and start camera spinning
         self.toggle_camera_spin()
+
+        # Load and transform the panda actor.
+        self.panda_actor = Actor("models/panda-model",
+                                {"walk": "models/panda-walk4"})
+        self.panda_actor.setScale(0.005, 0.005, 0.005)
+        self.panda_actor.reparentTo(self.render)
+        # Loop the animation.
+        self.panda_actor.loop("walk")
 
     def toggle_camera_spin(self):
         if self.spin_camera:
