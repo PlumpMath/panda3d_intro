@@ -65,6 +65,10 @@ class MyApp(ShowBase):
                                   name="pandaPace")
         self.panda_pace.loop()
 
+        # Add a smiley for fun.
+        self.smiley = self.loader.loadModel("models/smiley")
+        self.smiley.setPos(0, 0, 1)
+        self.smiley.reparentTo(self.render)
 
     def toggle_camera_spin(self):
         if self.spin_camera:
